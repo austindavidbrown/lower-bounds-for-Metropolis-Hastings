@@ -73,7 +73,7 @@ g = 10
 dimensions_list = [2, 4, 6, 8, 10]
 samples_list = [int(gamma * k) for k in dimensions_list]
 n_reps = len(dimensions_list)
-n_iid = 100
+n_iid = 50
 n_variances = 3
 
 accept_estimates = torch.zeros(n_iid, n_variances, n_reps)
@@ -86,7 +86,7 @@ for j in range(0, n_iid):
 
       # Use different variance choices
       if k == 0:
-        h_rwm = .5
+        h_rwm = 1
       if k == 1:
         h_rwm = 2.38**2/n_features
       if k == 2:
@@ -142,17 +142,17 @@ iterations = torch.arange(0, n_reps)
 samples_and_dimensions = list(zip(dimensions_list, samples_list))
 
 
+plt.plot(iterations, mean_lb_estimates[0, :].cpu().numpy(), 
+         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = 1$", linewidth = linewidth)
+plt.fill_between(iterations, mean_lb_estimates[0, :] - std_lb_estimates[0, :]/n_iid**(1/2.),
+                 mean_lb_estimates[0, :] + std_lb_estimates[0, :]/n_iid**(1/2.), alpha=0.1,
+                 color=dark_blue_color)
+
 plt.plot(iterations, mean_lb_estimates[1, :].cpu().numpy(), 
          '-', alpha = alpha, marker="v", markersize=markersize, color=green_color, label=r"$h = 2.38^2/d$", linewidth = linewidth)
 plt.fill_between(iterations, mean_lb_estimates[1, :] - std_lb_estimates[1, :]/n_iid**(1/2.),
                  mean_lb_estimates[1, :] + std_lb_estimates[1, :]/n_iid**(1/2.), alpha=0.1,
                  color=green_color)
-
-plt.plot(iterations, mean_lb_estimates[0, :].cpu().numpy(), 
-         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = .5$", linewidth = linewidth)
-plt.fill_between(iterations, mean_lb_estimates[0, :] - std_lb_estimates[0, :]/n_iid**(1/2.),
-                 mean_lb_estimates[0, :] + std_lb_estimates[0, :]/n_iid**(1/2.), alpha=0.1,
-                 color=dark_blue_color)
 
 plt.plot(iterations, mean_lb_estimates[2, :].cpu().numpy(), 
          '-', alpha = alpha, marker="v", markersize=markersize, color=purple_color, label=r"$h = 1/(d n)$", linewidth = linewidth)
@@ -182,17 +182,17 @@ plt.figure(figsize=(10, 8))
 iterations = torch.arange(0, n_reps)
 samples_and_dimensions = list(zip(dimensions_list, samples_list))
 
+plt.plot(iterations, mean_mt_estimates[0, :].cpu().numpy(), 
+         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = 1$", linewidth = linewidth)
+plt.fill_between(iterations, mean_mt_estimates[0, :] - std_mt_estimates[0, :]/n_iid**(1/2.),
+                 mean_mt_estimates[0, :] + std_mt_estimates[0, :]/n_iid**(1/2.), alpha=0.1,
+                 color=dark_blue_color)
+
 plt.plot(iterations, mean_mt_estimates[1, :].cpu().numpy(), 
          '-', alpha = alpha, marker="v", markersize=markersize, color=green_color, label=r"$h = 2.38^2/d$", linewidth = linewidth)
 plt.fill_between(iterations, mean_mt_estimates[1, :] - std_mt_estimates[1, :]/n_iid**(1/2.),
                  mean_mt_estimates[1, :] + std_mt_estimates[1, :]/n_iid**(1/2.), alpha=0.1,
                  color=green_color)
-
-plt.plot(iterations, mean_mt_estimates[0, :].cpu().numpy(), 
-         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = .5$", linewidth = linewidth)
-plt.fill_between(iterations, mean_mt_estimates[0, :] - std_mt_estimates[0, :]/n_iid**(1/2.),
-                 mean_mt_estimates[0, :] + std_mt_estimates[0, :]/n_iid**(1/2.), alpha=0.1,
-                 color=dark_blue_color)
 
 plt.plot(iterations, mean_mt_estimates[2, :].cpu().numpy(), 
          '-', alpha = alpha, marker="v", markersize=markersize, color=purple_color, label=r"$h = 1/(d n)$", linewidth = linewidth)
