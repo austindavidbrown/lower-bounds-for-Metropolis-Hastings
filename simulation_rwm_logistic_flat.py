@@ -1,4 +1,6 @@
 import torch
+torch.manual_seed(5)
+torch.autograd.set_grad_enabled(False)
 
 import matplotlib.pyplot as plt
 from matplotlib import rc
@@ -6,7 +8,7 @@ import seaborn as sns
 
 # Gradient descent with annealing step sizes
 def graddescent(X, Y,
-                stepsize = .1, tol = 10**(-10), max_iterations = 10**5):
+                stepsize = .5, tol = 10**(-8), max_iterations = 10**6):
   bceloss = torch.nn.BCEWithLogitsLoss(reduction="sum")
 
   b = torch.zeros(1)
@@ -62,7 +64,7 @@ def estimate_accept(X, Y, h_rwm, mc_iterations = 1000):
 dimensions_list = [10, 10, 10, 10]
 samples_list = [100, 200, 300, 400]
 n_reps = len(samples_list)
-n_iid = 100
+n_iid = 50
 n_variances = 4
 
 accept_estimates = torch.zeros(n_iid, n_variances, n_reps)

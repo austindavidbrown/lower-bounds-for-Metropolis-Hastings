@@ -1,8 +1,10 @@
 import torch
+torch.manual_seed(5)
+torch.autograd.set_grad_enabled(False)
 
 # Gradient descent with annealing step sizes
 def graddescent(X, Y, Cov_prior, 
-                stepsize = .1, tol = 10**(-10), max_iterations = 10**5):
+                stepsize = .5, tol = 10**(-8), max_iterations = 10**6):
   Cov_prior_half = torch.linalg.cholesky(Cov_prior)
   Cov_prior_inv = torch.cholesky_inverse(Cov_prior_half)
   bceloss = torch.nn.BCEWithLogitsLoss(reduction="sum")
@@ -40,8 +42,8 @@ def graddescent(X, Y, Cov_prior,
 
   raise Exception("Gradient descent failed to converge.")
 
-
-def run_sim(X, Y, Cov_prior, h_rwm, mc_iterations = 1000):
+# Estimate the acceptance probability at the optimum
+def estimate_accept(X, Y, Cov_prior, h_rwm, mc_iterations = 1000):
   b_opt, theta_opt = graddescent(X, Y, Cov_prior)
   n_features = X.size(1)
   n_samples = X.size(0)
@@ -61,7 +63,9 @@ def run_sim(X, Y, Cov_prior, h_rwm, mc_iterations = 1000):
       estimates[i] = torch.min(torch.exp(f_theta_opt - f_theta_new), torch.ones(1))
   return torch.mean(estimates)
 
+###
 # Run sim
+###
 gamma = 4
 g = 10
 (2 * g) / ( gamma * (1 - (1/gamma)**(1/2))**(2))
@@ -69,7 +73,7 @@ g = 10
 dimensions_list = [2, 4, 6, 8, 10]
 samples_list = [int(gamma * k) for k in dimensions_list]
 n_reps = len(dimensions_list)
-n_iid = 2
+n_iid = 100
 n_variances = 3
 
 accept_estimates = torch.zeros(n_iid, n_variances, n_reps)
@@ -104,7 +108,7 @@ for j in range(0, n_iid):
       XTX_inv = torch.cholesky_inverse(XTX_half)
       Cov_prior = g * XTX_inv
       
-      accept_estimates[j, k, rep] = run_sim(X, Y, Cov_prior, h_rwm)
+      accept_estimates[j, k, rep] = estimate_accept(X, Y, Cov_prior, h_rwm)
 
 
 ###
