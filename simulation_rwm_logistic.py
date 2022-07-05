@@ -86,7 +86,7 @@ for j in range(0, n_iid):
 
       # Use different variance choices
       if k == 0:
-        h_rwm = 1
+        h_rwm = .6
       if k == 1:
         h_rwm = 2.38**2/n_features
       if k == 2:
@@ -143,7 +143,7 @@ samples_and_dimensions = list(zip(dimensions_list, samples_list))
 
 
 plt.plot(iterations, mean_lb_estimates[0, :].cpu().numpy(), 
-         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = 1$", linewidth = linewidth)
+         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = .6$", linewidth = linewidth)
 plt.fill_between(iterations, mean_lb_estimates[0, :] - std_lb_estimates[0, :]/n_iid**(1/2.),
                  mean_lb_estimates[0, :] + std_lb_estimates[0, :]/n_iid**(1/2.), alpha=0.1,
                  color=dark_blue_color)
@@ -183,7 +183,7 @@ iterations = torch.arange(0, n_reps)
 samples_and_dimensions = list(zip(dimensions_list, samples_list))
 
 plt.plot(iterations, mean_mt_estimates[0, :].cpu().numpy(), 
-         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = 1$", linewidth = linewidth)
+         '-', alpha = alpha, marker="v", markersize=markersize, color=dark_blue_color, label=r"$h = .6$", linewidth = linewidth)
 plt.fill_between(iterations, mean_mt_estimates[0, :] - std_mt_estimates[0, :]/n_iid**(1/2.),
                  mean_mt_estimates[0, :] + std_mt_estimates[0, :]/n_iid**(1/2.), alpha=0.1,
                  color=dark_blue_color)
