@@ -1,15 +1,21 @@
-import torch
-torch.manual_seed(5)
-torch.autograd.set_grad_enabled(False)
-
 import matplotlib.pyplot as plt
 from matplotlib import rc
 import seaborn as sns
 
-# Gradient descent with annealing step sizes
+# Pytorch settings
+import torch
+torch.manual_seed(5)
+torch.autograd.set_grad_enabled(False)
+
+# Compute the binary cross entropy loss for logistic regression
+# Replaced torch.nn.BCEWithLogitsLoss(reduction="sum") just to be more explicit
+def bceloss(out, Y):
+  return torch.sum( torch.log1p(torch.exp(out)) - Y * out )
+
+# Gradient descent on the negative log of the target density with annealing step sizes
 def graddescent(X, Y,
+                anneal_factor = .99,
                 stepsize = .5, tol = 10**(-8), max_iterations = 10**6):
-  bceloss = torch.nn.BCEWithLogitsLoss(reduction="sum")
 
   b = torch.zeros(1)
   theta = torch.zeros(X.size(1))
@@ -29,7 +35,7 @@ def graddescent(X, Y,
       
       # New loss worse than old loss? Reduce step size and try again.
       if (new_loss > old_loss):
-        stepsize = stepsize * (.99)
+        stepsize = stepsize * anneal_factor
       else:
         # Stopping criterion
         if (old_loss - new_loss) < tol:
@@ -42,12 +48,13 @@ def graddescent(X, Y,
 
   raise Exception("Gradient descent failed to converge.")
 
-# Estimate the acceptance probability at the optimum
-def estimate_accept(X, Y, h_rwm, mc_iterations = 1000):
-  b_opt, theta_opt = graddescent(X, Y)
+# Estimate the acceptance probability for RWM at the optimum of the target density
+# Estimate the bias with the MLE (i.e. don't use MCMC for the bias)
+def estimate_accept(X, Y, h_rwm, 
+                    b_opt, theta_opt,
+                    mc_iterations = 1000):
   n_features = X.size(1)
   n_samples = X.size(0)
-  bceloss = torch.nn.BCEWithLogitsLoss(reduction="sum")
 
   # estimate accept
   estimates = torch.zeros(mc_iterations)
@@ -59,7 +66,7 @@ def estimate_accept(X, Y, h_rwm, mc_iterations = 1000):
   return torch.mean(estimates)
 
 ###
-# Run sim
+# Run simulation
 ###
 dimensions_list = [10, 10, 10, 10]
 samples_list = [100, 200, 300, 400]
@@ -70,11 +77,24 @@ n_variances = 4
 accept_estimates = torch.zeros(n_iid, n_variances, n_reps)
 for j in range(0, n_iid):
   print("iid:", j + 1)
-  for k in range(0, n_variances):
-    for rep in range(0, n_reps):
-      n_features = 10
-      n_samples = samples_list[rep]
+  for rep in range(0, n_reps):
+    n_features = 10
+    n_samples = samples_list[rep]
 
+    # Generate data
+    bias_true = 1
+    theta_true = torch.zeros(n_features).normal_(0, 1)
+    X = torch.zeros(n_samples, n_features)
+    for i in range(0, n_samples):
+      X[i, :] = torch.zeros(n_features).uniform_(-2, 2)
+    Y = torch.zeros(n_samples, dtype=torch.long)
+    prob = torch.sigmoid(bias_true + X @ theta_true)
+    for i in range(0, Y.size(0)):
+      Y[i] = torch.bernoulli(prob[i])
+
+    b_opt, theta_opt = graddescent(X, Y)
+
+    for k in range(0, n_variances):
       # Use different variance choices
       if k == 0:
         h_rwm = .1
@@ -84,27 +104,14 @@ for j in range(0, n_iid):
         h_rwm = 1/n_samples
       if k == 3:
         h_rwm = .1/n_samples
-
-      # Generate data
-      bias_true = 1
-      theta_true = torch.zeros(n_features).normal_(0, 1)
-      X = torch.zeros(n_samples, n_features)
-      for i in range(0, n_samples):
-        X[i, :] = torch.zeros(n_features).uniform_(-2, 2)
-      Y = torch.zeros(n_samples, dtype=torch.long)
-      prob = torch.sigmoid(bias_true + X @ theta_true)
-      for i in range(0, Y.size(0)):
-        Y[i] = torch.bernoulli(prob[i])
       
-      accept_estimates[j, k, rep] = estimate_accept(X, Y, h_rwm)
+      accept_estimates[j, k, rep] = estimate_accept(X, Y, h_rwm,
+                                                    b_opt, theta_opt)
 
 
 ###
-# Convergence rate lower bound plot
+# Plotting settings
 ###
-mean_lb_estimates = (1 - accept_estimates).mean(0)
-std_lb_estimates = (1 - accept_estimates).std(0)
-
 linewidth = 3
 markersize = 5
 alpha = .8
@@ -117,6 +124,16 @@ blue_color = (0.33999999999999997, 0.43879999999999986, 0.86)
 green_color = (0.17254901960784313, 0.6274509803921569, 0.17254901960784313)
 purple_color = (0.5803921568627451, 0.403921568627451, 0.7411764705882353)
 
+solid_line = (0, ()) 
+dense_dashed_line = (0, (5, 1))
+dash_dot_line = (0, (3, 1, 1, 1))
+dash_line = (0, (1, 1))
+
+###
+# Convergence rate lower bound plot
+###
+mean_lb_estimates = (1 - accept_estimates).mean(0)
+std_lb_estimates = (1 - accept_estimates).std(0)
 
 plt.clf()
 plt.style.use("ggplot")
@@ -125,9 +142,9 @@ plt.figure(figsize=(10, 8))
 iterations = torch.arange(0, n_reps)
 samples_and_dimensions = list(zip(dimensions_list, samples_list))
 
-def plot_estimate(mean_estimates, std_estimates, color, label):
+def plot_estimate(mean_estimates, std_estimates, color, label, line_style):
   plt.plot(iterations, mean_estimates, 
-           '-', alpha = alpha, marker="v", markersize=markersize, color=color, label=label, linewidth = linewidth)
+           linestyle=line_style, alpha = alpha, marker="v", markersize=markersize, color=color, label=label, linewidth = linewidth)
   plt.fill_between(iterations, mean_estimates - std_estimates/n_iid**(1/2.),
                    mean_estimates + std_estimates/n_iid**(1/2.), alpha=0.1,
                    color=color)
@@ -136,22 +153,26 @@ def plot_estimate(mean_estimates, std_estimates, color, label):
 plot_estimate(mean_lb_estimates[0, :].numpy(), 
               std_lb_estimates[0, :].numpy(), 
               red_color,
-              r"$h = .1$")
+              r"$h = .1$",
+              solid_line)
 
 plot_estimate(mean_lb_estimates[1, :].numpy(), 
               std_lb_estimates[1, :].numpy(), 
               green_color,
-              r"$h = 5/n$")
+              r"$h = 5/n$",
+              dense_dashed_line)
 
 plot_estimate(mean_lb_estimates[2, :].numpy(), 
               std_lb_estimates[2, :].numpy(), 
               purple_color,
-              r"$h = 1/n$")
+              r"$h = 1/n$",
+              dash_dot_line)
 
 plot_estimate(mean_lb_estimates[3, :].numpy(), 
               std_lb_estimates[3, :].numpy(), 
               dark_blue_color,
-              r"$h = .1/n$")
+              r"$h = .1/n$",
+              dash_line)
 
 plt.tick_params(axis='x', labelsize=20)
 plt.tick_params(axis='y', labelsize=20)
@@ -178,23 +199,27 @@ samples_and_dimensions = list(zip(dimensions_list, samples_list))
 plot_estimate(mean_mt_estimates[0, :].numpy(), 
               std_mt_estimates[0, :].numpy(), 
               red_color,
-              r"$h = .1$")
+              r"$h = .1$",
+              solid_line)
 
 plot_estimate(mean_mt_estimates[1, :].numpy(), 
               std_mt_estimates[1, :].numpy(), 
               green_color,
-              r"$h = 5/n$")
+              r"$h = 5/n$",
+              dense_dashed_line)
 
 plot_estimate(mean_mt_estimates[2, :].numpy(), 
               std_mt_estimates[2, :].numpy(), 
               purple_color,
-              r"$h = 1/n$")
+              r"$h = 1/n$",
+              dash_dot_line)
 
 
 plot_estimate(mean_mt_estimates[3, :].numpy(), 
               std_mt_estimates[3, :].numpy(), 
               dark_blue_color,
-              r"$h = .1/n$")
+              r"$h = .1/n$",
+              dash_line)
 
 plt.tick_params(axis='x', labelsize=20)
 plt.tick_params(axis='y', labelsize=20)
@@ -203,9 +228,3 @@ plt.xlabel(r"The dimension and sample size: d, n", fontsize = 25, color="black")
 plt.ylabel(r"Mixing time lower bound", fontsize = 25, color="black")
 plt.legend(loc="best", fontsize=25, borderpad=.05, framealpha=0)
 plt.savefig("flat_mt_plot.png", pad_inches=0, bbox_inches='tight',)
-
-
-
-
-
-
