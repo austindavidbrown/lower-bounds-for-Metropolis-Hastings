@@ -1,6 +1,6 @@
 # Lower bounds on the rate of convergence for Metropolis-Hastings algorithms
 
-Simulation code to reproduce the results in the corresponding paper. The dependencies will need to be installed beforehand.
+Simulation code to reproduce the results in my dissertation. The dependencies will need to be installed beforehand.
 
 ## Authors
 
