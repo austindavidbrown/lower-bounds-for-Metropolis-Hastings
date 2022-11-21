@@ -18,7 +18,7 @@ Here is a simple example:
 
 ```python
 import torch
-from mhlb import estimate_lower_bound_RWM
+from mhlb import lb_rwm
 
 # Generate logistic regression data
 n_features = 10
