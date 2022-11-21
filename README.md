@@ -23,6 +23,7 @@ from mhlb import lb_rwm
 # Generate logistic regression data
 n_features = 10
 n_samples = 100
+sigma2_prior = 10
 
 theta_true = torch.zeros(n_features + 1).normal_(0, 1)
 X = torch.zeros(n_samples, n_features).uniform_(-1, 1)  
@@ -31,26 +32,19 @@ prob = torch.sigmoid(theta_true[0] + X @ theta_true[1:])
 for i in range(0, Y.size(0)):
   Y[i] = torch.bernoulli(prob[i])
 
-# Create a target distribution class
-class RidgeLogisticRegressionPosterior:
-  def __init__(self, X, Y, sigma2_prior):
-    self.X = X
-    self.Y = Y
-    self.g = g
+# The negative log of the target density i.e. \pi \propto \exp(-f)
+def negative_log_target_density(theta):
+  out = theta[0] + X @ theta[1:]
+  loss = torch.sum(torch.log1p(torch.exp(out)) - Y.double() * out ) \
+         + 1/(2.0 * sigma2_prior) * theta[1:] @ theta[1:]
+  return loss
 
-  # \pi \propto \exp(-f)
-  def f(self, theta):
-    out = theta[0] + self.X @ theta[1:]
-    loss = torch.sum(torch.log1p(torch.exp(out)) - self.Y.double() * out ) \
-           + 1/(2.0 * sigma2_prior) * theta[1:] @ theta[1:]
-    return loss
+# Estimate a lower bound on the geometric convergence rate for RWM
+dimension = n_features + 1 
+lb = lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
+            dimension = dimension,  # dimension of the parameter
+            var_rwm = 2.38**2/dimension) # variance in the RWM proposal
 
-target_distribution = RidgeLogisticRegressionPosterior(X, Y, sigma2_prior = 10)
-
-# Estimate a lower bound on the geometric convergence rate
-lb = lb_rwm(f = target_distribution.f, 
-            dimension = n_features + 1, 
-            var_rwm = 2.38**2/dimension)
 print(lb)
 ```
 
