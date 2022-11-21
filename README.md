@@ -21,19 +21,19 @@ import torch
 from mhlb import lb_rwm
 
 # Generate logistic regression data
-n_features = 10
-n_samples = 100
-sigma2_prior = 10
+d = 10
+n = 100
 
-theta_true = torch.zeros(n_features).normal_(0, 1)
-X = torch.zeros(n_samples, n_features).uniform_(-1, 1)
+theta_true = torch.zeros(d).normal_(0, 1)
+X = torch.zeros(n, d).uniform_(-1, 1)
 X[:, 0] = 1  
-Y = torch.zeros(n_samples, dtype=torch.long)
+Y = torch.zeros(n, dtype=torch.long)
 prob = torch.sigmoid(X @ theta_true)
 for i in range(0, Y.size(0)):
   Y[i] = torch.bernoulli(prob[i])
 
 # The negative log of the target density i.e. \pi \propto \exp(-f)
+sigma2_prior = 10
 def negative_log_target_density(theta):
   out = X @ theta
   loss = torch.sum(torch.log1p(torch.exp(out)) - Y.double() * out ) \
@@ -42,8 +42,8 @@ def negative_log_target_density(theta):
 
 # Estimate a lower bound on the geometric convergence rate for RWM
 lb = lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
-            dimension = n_features,  # dimension of the parameter
-            var_rwm = 2.38**2/n_features) # variance in the RWM proposal
+            dimension = d,  # dimension of the parameter
+            var_rwm = 2.38**2/d) # variance in the RWM proposal
 
 print(lb)
 ```
