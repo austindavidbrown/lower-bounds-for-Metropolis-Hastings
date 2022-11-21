@@ -1,7 +1,9 @@
 # Lower bounds on the rate of convergence for Metropolis-Hastings algorithms
 (IMPORTANT: NOT UPLOADED TO PIP YET)
 
-A Python implementation to estimate lower bounds on the geometric convergence rate for RWM Metropolis-Hastings. This library relies on Pytorch. Install using PIP:
+A Python implementation to estimate lower bounds on the geometric convergence rate for RWM Metropolis-Hastings. This library relies on Pytorch. This also includes some simulations from my dissertation before I made the more general package.
+
+Install using PIP:
 
 ```bash
 pip install mhlb
