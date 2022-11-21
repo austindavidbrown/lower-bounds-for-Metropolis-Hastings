@@ -49,8 +49,7 @@ def grad_descent(loss, x_0,
 # mc_iterations: number of Monte Carlo iterations to use
 # returns the mean and quantiles
 def lb_rwm(f, dimension, var_rwm,
-           mc_iterations = 1000,
-           q = .05): 
+           mc_iterations = 1000): 
   theta_opt = grad_descent(f, torch.zeros(dimension))
  
   # estimate accept
