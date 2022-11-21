@@ -51,8 +51,6 @@ print(lb)
 
 ## Citation
 
-https://arxiv.org/abs/2111.10406
-
 ## Authors
 
 Austin Brown (graduate student at the School of Statistics, University of Minnesota)
