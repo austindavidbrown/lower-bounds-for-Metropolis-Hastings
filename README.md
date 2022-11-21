@@ -39,10 +39,9 @@ class RidgeLogisticRegressionPosterior:
            + 1/(2.0 * sigma2_prior) * theta[1:] @ theta[1:]
     return loss
 
-sigma2_prior = 10 # Ridge prior variance
-target_distribution = RidgeLogisticRegressionPosterior(X, Y, sigma2_prior)
+target_distribution = RidgeLogisticRegressionPosterior(X, Y, sigma2_prior = 10)
 
-# Esimtate a lower bound on the geometric convergence rate
+# Estimate a lower bound on the geometric convergence rate
 lb = lb_rwm(f = target_distribution.f, 
             dimension = n_features + 1, 
             var_rwm = 2.38**2/dimension)
