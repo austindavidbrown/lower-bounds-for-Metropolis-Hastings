@@ -25,24 +25,27 @@ n_features = 10
 n_samples = 100
 sigma2_prior = 10
 
-theta_true = torch.zeros(n_features + 1).normal_(0, 1)
-X = torch.zeros(n_samples, n_features).uniform_(-1, 1)  
+theta_true = torch.zeros(n_features).normal_(0, 1)
+X = torch.zeros(n_samples, n_features).uniform_(-1, 1)
+X[:, 0] = 1  
 Y = torch.zeros(n_samples, dtype=torch.long)
-prob = torch.sigmoid(theta_true[0] + X @ theta_true[1:])
+prob = torch.sigmoid(X @ theta_true)
 for i in range(0, Y.size(0)):
   Y[i] = torch.bernoulli(prob[i])
 
 # The negative log of the target density i.e. \pi \propto \exp(-f)
 def negative_log_target_density(theta):
-  out = theta[0] + X @ theta[1:]
+  out = X @ theta
   loss = torch.sum(torch.log1p(torch.exp(out)) - Y.double() * out ) \
-         + 1/(2.0 * sigma2_prior) * theta[1:] @ theta[1:]
+         + 1/(2.0 * sigma2_prior) * theta @ theta
   return loss
 
 # Estimate a lower bound on the geometric convergence rate for RWM
-lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
-            dimension = n_features + 1,  # dimension of the parameter
-            var_rwm = 2.38**2/(n_features + 1 )) # variance in the RWM proposal
+lb = lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
+            dimension = n_features,  # dimension of the parameter
+            var_rwm = 2.38**2/n_features) # variance in the RWM proposal
+
+print(lb)
 ```
 
 ## Citation
