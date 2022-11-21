@@ -1,5 +1,5 @@
 # Lower bounds on the rate of convergence for Metropolis-Hastings algorithms
-(IMPORTANT: NOT UPLOADED TO PIP YET)
+(IMPORTANT: NOT COMPLTED AND UPLOADED TO PIP YET, Manuscript is almost finished)
 
 A Python implementation to estimate lower bounds on the geometric convergence rate for RWM Metropolis-Hastings. This library relies on Pytorch. This also includes some simulations from my dissertation before I made the more general package.
 
