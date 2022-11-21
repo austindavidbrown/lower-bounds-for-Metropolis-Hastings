@@ -53,6 +53,9 @@ print(lb)
 
 ## Citation
 
+My dissertation (Chapter 3):
+https://conservancy.umn.edu/handle/11299/243073
+
 ## Authors
 
 Austin Brown (graduate student at the School of Statistics, University of Minnesota)
