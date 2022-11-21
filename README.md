@@ -40,10 +40,9 @@ def negative_log_target_density(theta):
   return loss
 
 # Estimate a lower bound on the geometric convergence rate for RWM
-dimension = n_features + 1 
 lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
-            dimension = dimension,  # dimension of the parameter
-            var_rwm = 2.38**2/dimension) # variance in the RWM proposal
+            dimension = n_features + 1,  # dimension of the parameter
+            var_rwm = 2.38**2/(n_features + 1 )) # variance in the RWM proposal
 ```
 
 ## Citation
