@@ -40,12 +40,10 @@ def negative_log_target_density(theta):
          + 1/(2.0 * sigma2_prior) * theta @ theta
   return loss
 
-# Estimate a lower bound on the geometric convergence rate for RWM
-lb = lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
+# Estimates a lower bound on the geometric convergence rate for RWM
+lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
             dimension = d,  # dimension of the parameter
             var_rwm = 2.38**2/d) # variance in the RWM proposal
-
-print(lb)
 ```
 
 ## Citation
