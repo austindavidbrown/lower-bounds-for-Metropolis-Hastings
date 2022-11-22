@@ -14,7 +14,7 @@ This also includes some simulations from my dissertation before I made the more 
 
 # Example
 
-Here is a simple example:
+Here is a simple example for the posterior in ridge logistic regression:
 
 ```python
 import torch
