@@ -13,7 +13,7 @@ This also includes some simulations from my dissertation before I made the more 
 
 # Example
 
-Here is a simple example for the posterior in ridge logistic regression:
+Here is a simple example to estimate the lower bound on the convergence rate for random-walk Metropolis-Hastings for the posterior in ridge logistic regression:
 
 ```python
 import torch
