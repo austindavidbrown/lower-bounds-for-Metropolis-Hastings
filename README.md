@@ -1,15 +1,12 @@
 # Estimate lower bounds on the rate of convergence for Metropolis-Hastings algorithms
 
-A Python implementation to estimate lower bounds on the geometric convergence rate for RWM Metropolis-Hastings. See my dissertation (Chapter 3):
-https://conservancy.umn.edu/handle/11299/243073.
+A Python implementation to estimate lower bounds on the geometric convergence rate for RWM Metropolis-Hastings.
 
 Install using PIP:
 
 ```bash
 pip install mhlb
 ```
-
-This also includes some simulations from my dissertation before I made the more general package. 
 
 # Example
 
@@ -58,3 +55,7 @@ Austin Brown (graduate student at the School of Statistics, University of Minnes
 
 * [Python](https://www.python.org)
 * [PyTorch](http://pytorch.org/)
+
+## Dissertation simulations
+
+This project also includes some simulations from Chapter 3 of my dissertation before I made the more general package. 
