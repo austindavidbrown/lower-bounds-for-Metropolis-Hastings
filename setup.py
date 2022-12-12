@@ -8,10 +8,10 @@ setup(
   name="mhlb", 
   version="0.1",
   author="Austin Brown",
-  author_email="brow5079@umn.edu",
+  author_email="austin.d.brown@warwick.ac.uk",
   description="Estimate Lower bounds for Metropolis-Hastings",
   url = "https://github.com/austindavidbrown/lower-bounds-for-Metropolis-Hastings",
-  packages=["cmhi"],
+  packages=["mhlb"],
   install_requires=["torch >= 1.9.1"],
-  keywords=["Metropolis-Hastings", "MCMC"]
+  keywords=["Metropolis-Hastings", "MCMC diagnostics"]
 )
