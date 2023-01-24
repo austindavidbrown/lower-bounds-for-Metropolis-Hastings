@@ -30,7 +30,7 @@ def grad_descent(loss, x_0,
       else: 
         # Stopping criterion
         if (old_loss - new_loss) < tol:
-          return x.detach()
+          return x_new.detach()
         else:
           # Update
           x = x_new
