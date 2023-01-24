@@ -1,8 +1,6 @@
 # Estimate lower bounds on the rate of convergence for Metropolis-Hastings algorithms
 
-A Python implementation to estimate lower bounds on the geometric convergence rate for RWM Metropolis-Hastings.
-
-Install using PIP:
+A Python implementation to estimate lower bounds on the geometric convergence rate for RWM Metropolis-Hastings from the pre-print https://arxiv.org/abs/2212.05955. The library uses Pytorch. Install using PIP:
 
 ```bash
 pip install mhlb
@@ -10,7 +8,7 @@ pip install mhlb
 
 # Example
 
-Here is a simple example to estimate the lower bound on the convergence rate for random-walk Metropolis-Hastings for the posterior in ridge logistic regression:
+Here is a simple example to estimate the lower bound on the convergence rate for random-walk Metropolis-Hastings for the posterior in Bayesian ridge logistic regression:
 
 ```python
 import torch
@@ -43,6 +41,9 @@ lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
 ```
 
 ## Citation
+
+Pre-print:
+https://arxiv.org/abs/2212.05955
 
 My dissertation (Chapter 3):
 https://conservancy.umn.edu/handle/11299/243073
