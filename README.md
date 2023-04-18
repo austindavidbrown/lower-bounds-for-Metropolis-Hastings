@@ -42,10 +42,16 @@ lb_rwm(negative_log_target_density, # \pi \propto \exp(-f)
 
 ## Citation
 
-Pre-print:
-https://arxiv.org/abs/2212.05955
+```
+@article{brown:jones:2022,
+    title={{Lower Bounds on the Rate of Convergence for Accept-Reject-Based Markov Chains}}, 
+    author={\textbf{Austin Brown} and Galin Jones},
+    year={2022},
+    journal = {preprint arXiv:2212.05955}
+}
+```
 
-My dissertation (Chapter 3):
+Also my dissertation (Chapter 3):
 https://conservancy.umn.edu/handle/11299/243073
 
 ## Authors
