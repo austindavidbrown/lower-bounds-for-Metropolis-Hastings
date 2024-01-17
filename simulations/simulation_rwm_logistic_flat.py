@@ -39,7 +39,7 @@ def graddescent(X, Y,
       else:
         # Stopping criterion
         if (old_loss - new_loss) < tol:
-          return b, theta
+          return b_new, theta_new
 
         # Update
         b = b_new
